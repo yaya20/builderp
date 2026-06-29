@@ -110,19 +110,19 @@ export default function EmployeeCard({ employee }: { employee: Employee }) {
   const totalOvertime = employee.attendances.reduce((s, a) => s + (a.overtimeHours ?? 0), 0)
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="p-4 md:p-6 max-w-5xl mx-auto">
       {/* Back */}
       <Link
         href="/employees"
-        className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-800 mb-5 transition-colors"
+        className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-800 mb-4 transition-colors"
       >
         <ArrowRight className="w-4 h-4" />
         חזרה לרשימת העובדים
       </Link>
 
-      <div className="grid grid-cols-3 gap-5">
-        {/* ─── Left: profile card ─── */}
-        <div className="col-span-1 space-y-4">
+      <div className="flex flex-col md:grid md:grid-cols-3 gap-4 md:gap-5">
+        {/* ─── Profile card ─── */}
+        <div className="md:col-span-1 space-y-4">
           <div className="bg-white border border-slate-200 rounded-xl p-5">
             {/* Avatar */}
             <div className="flex flex-col items-center mb-4">
@@ -246,10 +246,10 @@ export default function EmployeeCard({ employee }: { employee: Employee }) {
           )}
         </div>
 
-        {/* ─── Right: tabs ─── */}
-        <div className="col-span-2 space-y-4">
+        {/* ─── Tabs ─── */}
+        <div className="md:col-span-2 space-y-4">
           {/* Action buttons */}
-          <div className="flex gap-3">
+          <div className="flex gap-2 md:gap-3">
             <TabButton
               active={activeTab === 'attendance'}
               onClick={() => setActiveTab(activeTab === 'attendance' ? null : 'attendance')}
@@ -453,7 +453,7 @@ function TabButton({
     <button
       onClick={onClick}
       className={cn(
-        'flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all',
+        'flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-xl border text-xs md:text-sm font-medium transition-all flex-1 md:flex-none justify-center md:justify-start',
         active
           ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
           : 'bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:text-blue-700'
