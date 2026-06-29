@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Employee {
+  id               String           @id @default(cuid())
+  employeeNumber   Int              @unique @default(autoincrement())
+  firstName        String
+  lastName         String
+  idNumber         String           @unique
+  birthDate        DateTime?
+  address          String?
+  mobile           String?
+  phone2           String?
+  email            String?
+  emergencyContact String?
+  emergencyPhone   String?
+  photoUrl         String?
+  status           EmployeeStatus   @default(ACTIVE)
+  employmentType   EmploymentType
+  role             String?
+  department       String?
+  startDate        DateTime?
+  endDate          DateTime?
+  notes            String?
+
+  manpowerCompanyId String?
+  manpowerCompany   ManpowerCompany? @relation(fields: [manpowerCompanyId], references: [id])
+
+  managerId String?
+  manager   Employee?  @relation("EmployeeManager", fields: [managerId], references: [id])
+  reports   Employee[] @relation("EmployeeManager")
+
+  skills         EmployeeSkill[]
+  certifications Certification[]
+  attendances    Attendance[]
+  documents      Document[]
+  alerts         Alert[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("employees")
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum EmploymentType {
+  COMPANY
+  CONTRACTOR
+  MANPOWER
+}
+
+model ManpowerCompany {
+  id          String     @id @default(cuid())
+  name        String
+  contactName String?
+  phone       String?
+  email       String?
+  employees   Employee[]
+  createdAt   DateTime   @default(now())
+
+  @@map("manpower_companies")
+}
+
+model EmployeeSkill {
+  id         String   @id @default(cuid())
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  skillName  String
+  createdAt  DateTime @default(now())
+
+  @@unique([employeeId, skillName])
+  @@map("employee_skills")
+}
+
+model Certification {
+  id          String    @id @default(cuid())
+  employeeId  String
+  employee    Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  certType    String
+  certNumber  String?
+  issuedDate  DateTime?
+  expiryDate  DateTime?
+  issuingBody String?
+  fileUrl     String?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("certifications")
+}
+
+model Attendance {
+  id            String   @id @default(cuid())
+  employeeId    String
+  employee      Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  workDate      DateTime
+  site          String?
+  startTime     String?
+  endTime       String?
+  totalHours    Float?
+  overtimeHours Float?
+  notes         String?
+  createdAt     DateTime @default(now())
+
+  @@map("attendance")
+}
+
+model Document {
+  id          String   @id @default(cuid())
+  employeeId  String
+  employee    Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  docType     String
+  title       String
+  fileUrl     String?
+  version     Int      @default(1)
+  description String?
+  isCurrent   Boolean  @default(true)
+  uploadedBy  String?
+  createdAt   DateTime @default(now())
+
+  @@map("documents")
+}
+
+model Alert {
+  id         String    @id @default(cuid())
+  employeeId String?
+  employee   Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+  alertType  String
+  message    String
+  isSent     Boolean   @default(false)
+  sentAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@map("alerts")
+}
