@@ -72,7 +72,7 @@ export default function EmployeesClient({
   const hasAlerts = urgentAlerts.length > 0 || dashboard.birthdays.length > 0
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-2xl font-bold text-slate-900">עובדים</h1>
         <Link
@@ -87,7 +87,7 @@ export default function EmployeesClient({
       {/* ─── Dashboard strip ─── */}
       <div className="space-y-2 mb-6">
         {/* Row 1: stats */}
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-green-100 flex items-center justify-center">
               <Users className="w-5 h-5 text-green-600" />
@@ -207,7 +207,7 @@ export default function EmployeesClient({
       </div>
 
       {/* ─── Search & filters ─── */}
-      <div className="flex gap-3 mb-4">
+      <div className="flex flex-col md:flex-row gap-2 md:gap-3 mb-4">
         <div className="relative flex-1">
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
@@ -241,7 +241,8 @@ export default function EmployeesClient({
 
       {/* ─── Employee list ─── */}
       <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-slate-100 text-xs font-medium text-slate-500 grid grid-cols-12 gap-3">
+        {/* Desktop header */}
+        <div className="hidden md:grid px-4 py-3 border-b border-slate-100 text-xs font-medium text-slate-500 grid-cols-12 gap-3">
           <span className="col-span-4">שם עובד</span>
           <span className="col-span-2">מס' עובד</span>
           <span className="col-span-2">תפקיד</span>
@@ -261,68 +262,54 @@ export default function EmployeesClient({
                 <Link
                   key={emp.id}
                   href={`/employees/${emp.id}`}
-                  className="grid grid-cols-12 gap-3 px-4 py-3 items-center hover:bg-slate-50 transition-colors group"
+                  className="block hover:bg-slate-50 transition-colors group"
                 >
-                  <div className="col-span-4 flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-blue-600 text-white text-sm font-bold flex items-center justify-center flex-shrink-0">
+                  {/* Mobile card */}
+                  <div className="md:hidden px-4 py-3 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white text-sm font-bold flex items-center justify-center flex-shrink-0">
                       {initials}
                     </div>
-                    <div>
-                      <div className="font-medium text-slate-900 text-sm">
-                        {emp.firstName} {emp.lastName}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-slate-900 text-sm">{emp.firstName} {emp.lastName}</span>
+                        <span className={cn('inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium', emp.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500')}>
+                          <span className={cn('w-1.5 h-1.5 rounded-full', emp.status === 'ACTIVE' ? 'bg-green-500' : 'bg-slate-400')} />
+                          {emp.status === 'ACTIVE' ? 'פעיל' : 'לא פעיל'}
+                        </span>
+                        {(certStatus === 'expired' || certStatus === 'urgent') && <AlertTriangle className="w-4 h-4 text-red-500" />}
+                        {certStatus === 'warning' && <AlertTriangle className="w-4 h-4 text-amber-400" />}
                       </div>
-                      {emp.mobile && (
-                        <div className="text-xs text-slate-400">{emp.mobile}</div>
-                      )}
+                      <div className="text-xs text-slate-400 mt-0.5">{emp.role ?? ''}{emp.role && emp.mobile ? ' · ' : ''}{emp.mobile ?? ''}</div>
                     </div>
+                    <ChevronLeft className="w-4 h-4 text-slate-300 flex-shrink-0" />
                   </div>
-                  <div className="col-span-2 text-sm text-slate-500">
-                    #{String(emp.employeeNumber).padStart(4, '0')}
-                  </div>
-                  <div className="col-span-2 text-sm text-slate-600">{emp.role ?? '—'}</div>
-                  <div className="col-span-2 text-sm text-slate-600">
-                    {employmentTypeLabel(emp.employmentType)}
-                  </div>
-                  <div className="col-span-1">
-                    <span
-                      className={cn(
-                        'inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium',
-                        emp.status === 'ACTIVE'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-slate-100 text-slate-500'
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          'w-1.5 h-1.5 rounded-full',
-                          emp.status === 'ACTIVE' ? 'bg-green-500' : 'bg-slate-400'
-                        )}
-                      />
-                      {emp.status === 'ACTIVE' ? 'פעיל' : 'לא פעיל'}
-                    </span>
-                  </div>
-                  <div className="col-span-1 flex items-center justify-end gap-1">
-                    {certStatus === 'expired' && (
-                      <span title="הסמכה פגה" className="text-red-500">
-                        <AlertTriangle className="w-4 h-4" />
+
+                  {/* Desktop row */}
+                  <div className="hidden md:grid grid-cols-12 gap-3 px-4 py-3 items-center">
+                    <div className="col-span-4 flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-blue-600 text-white text-sm font-bold flex items-center justify-center flex-shrink-0">
+                        {initials}
+                      </div>
+                      <div>
+                        <div className="font-medium text-slate-900 text-sm">{emp.firstName} {emp.lastName}</div>
+                        {emp.mobile && <div className="text-xs text-slate-400">{emp.mobile}</div>}
+                      </div>
+                    </div>
+                    <div className="col-span-2 text-sm text-slate-500">#{String(emp.employeeNumber).padStart(4, '0')}</div>
+                    <div className="col-span-2 text-sm text-slate-600">{emp.role ?? '—'}</div>
+                    <div className="col-span-2 text-sm text-slate-600">{employmentTypeLabel(emp.employmentType)}</div>
+                    <div className="col-span-1">
+                      <span className={cn('inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium', emp.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500')}>
+                        <span className={cn('w-1.5 h-1.5 rounded-full', emp.status === 'ACTIVE' ? 'bg-green-500' : 'bg-slate-400')} />
+                        {emp.status === 'ACTIVE' ? 'פעיל' : 'לא פעיל'}
                       </span>
-                    )}
-                    {certStatus === 'urgent' && (
-                      <span title="הסמכה פגה תוך 7 ימים" className="text-red-400">
-                        <AlertTriangle className="w-4 h-4" />
-                      </span>
-                    )}
-                    {certStatus === 'warning' && (
-                      <span title="הסמכה פגה תוך 30 יום" className="text-amber-400">
-                        <AlertTriangle className="w-4 h-4" />
-                      </span>
-                    )}
-                    {emp._count.documents > 0 && (
-                      <span title={`${emp._count.documents} מסמכים`} className="text-slate-300">
-                        <FileText className="w-4 h-4" />
-                      </span>
-                    )}
-                    <ChevronLeft className="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" />
+                    </div>
+                    <div className="col-span-1 flex items-center justify-end gap-1">
+                      {(certStatus === 'expired' || certStatus === 'urgent') && <AlertTriangle className="w-4 h-4 text-red-500" />}
+                      {certStatus === 'warning' && <AlertTriangle className="w-4 h-4 text-amber-400" />}
+                      {emp._count.documents > 0 && <FileText className="w-4 h-4 text-slate-300" />}
+                      <ChevronLeft className="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" />
+                    </div>
                   </div>
                 </Link>
               )
