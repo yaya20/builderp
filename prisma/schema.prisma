@@ -6,6 +6,8 @@ datasource db {
   provider = "postgresql"
 }
 
+// ─── Employees ───────────────────────────────────────────────────────────────
+
 model Employee {
   id               String           @id @default(cuid())
   employeeNumber   Int              @unique @default(autoincrement())
@@ -13,11 +15,13 @@ model Employee {
   lastName         String
   idNumber         String           @unique
   birthDate        DateTime?
+  preferredLang    String?          @default("he")
   address          String?
   mobile           String?
   phone2           String?
   email            String?
   emergencyContact String?
+  emergencyRelation String?
   emergencyPhone   String?
   photoUrl         String?
   status           EmployeeStatus   @default(ACTIVE)
@@ -35,11 +39,13 @@ model Employee {
   manager   Employee?  @relation("EmployeeManager", fields: [managerId], references: [id])
   reports   Employee[] @relation("EmployeeManager")
 
-  skills         EmployeeSkill[]
-  certifications Certification[]
-  attendances    Attendance[]
-  documents      Document[]
-  alerts         Alert[]
+  skills            EmployeeSkill[]
+  certifications    Certification[]
+  attendances       Attendance[]
+  documents         Document[]
+  alerts            Alert[]
+  projectAssignments ProjectAssignment[]
+  dailyAttendances  DailyAttendance[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -141,4 +147,92 @@ model Alert {
   createdAt  DateTime  @default(now())
 
   @@map("alerts")
+}
+
+// ─── Projects ─────────────────────────────────────────────────────────────────
+
+model Project {
+  id            String        @id @default(cuid())
+  projectNumber String        @unique
+  name          String
+  address       String?
+  client        String?
+  status        ProjectStatus @default(PLANNING)
+  startDate     DateTime?
+  endDate       DateTime?
+  description   String?
+  notes         String?
+
+  assignments ProjectAssignment[]
+  dailyLogs   DailyLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("projects")
+}
+
+enum ProjectStatus {
+  PLANNING
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+  CANCELLED
+}
+
+model ProjectAssignment {
+  id         String   @id @default(cuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  siteRole   String?
+
+  createdAt DateTime @default(now())
+
+  @@unique([projectId, employeeId])
+  @@map("project_assignments")
+}
+
+// ─── Daily Logs ───────────────────────────────────────────────────────────────
+
+model DailyLog {
+  id              String    @id @default(cuid())
+  projectId       String
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  logDate         DateTime
+  temperature     Float?
+  weatherStatus   String?
+  windSpeed       Float?
+  workDescription String?
+  incidents       String?
+  createdBy       String?
+  status          LogStatus @default(DRAFT)
+  signatureUrl    String?
+  lockedAt        DateTime?
+
+  attendance DailyAttendance[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, logDate])
+  @@map("daily_logs")
+}
+
+enum LogStatus {
+  DRAFT
+  LOCKED
+}
+
+model DailyAttendance {
+  id         String   @id @default(cuid())
+  logId      String
+  log        DailyLog @relation(fields: [logId], references: [id], onDelete: Cascade)
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([logId, employeeId])
+  @@map("daily_attendance")
 }

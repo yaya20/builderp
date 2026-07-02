@@ -86,89 +86,23 @@ export default function EmployeesClient({
 
       {/* ─── Dashboard strip ─── */}
       <div className="space-y-2 mb-6">
-        {/* Row 1: stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-green-100 flex items-center justify-center">
-              <Users className="w-5 h-5 text-green-600" />
+        {/* Row 1: alerts only */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className={cn('border rounded-xl p-4 flex items-center gap-3', dashboard.expiringCerts > 0 ? 'bg-amber-50 border-amber-200' : 'bg-white border-slate-200')}>
+            <div className={cn('w-9 h-9 rounded-lg flex items-center justify-center', dashboard.expiringCerts > 0 ? 'bg-amber-100' : 'bg-slate-100')}>
+              <AlertTriangle className={cn('w-5 h-5', dashboard.expiringCerts > 0 ? 'text-amber-600' : 'text-slate-400')} />
             </div>
             <div>
-              <div className="text-2xl font-bold text-slate-900">{dashboard.activeCount}</div>
-              <div className="text-xs text-slate-500">עובדים פעילים</div>
-            </div>
-          </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center">
-              <Users className="w-5 h-5 text-slate-400" />
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-slate-500">{dashboard.inactiveCount}</div>
-              <div className="text-xs text-slate-500">לא פעילים</div>
-            </div>
-          </div>
-          <div
-            className={cn(
-              'border rounded-xl p-4 flex items-center gap-3',
-              dashboard.expiringCerts > 0
-                ? 'bg-amber-50 border-amber-200'
-                : 'bg-white border-slate-200'
-            )}
-          >
-            <div
-              className={cn(
-                'w-9 h-9 rounded-lg flex items-center justify-center',
-                dashboard.expiringCerts > 0 ? 'bg-amber-100' : 'bg-slate-100'
-              )}
-            >
-              <AlertTriangle
-                className={cn(
-                  'w-5 h-5',
-                  dashboard.expiringCerts > 0 ? 'text-amber-600' : 'text-slate-400'
-                )}
-              />
-            </div>
-            <div>
-              <div
-                className={cn(
-                  'text-2xl font-bold',
-                  dashboard.expiringCerts > 0 ? 'text-amber-700' : 'text-slate-500'
-                )}
-              >
-                {dashboard.expiringCerts}
-              </div>
+              <div className={cn('text-2xl font-bold', dashboard.expiringCerts > 0 ? 'text-amber-700' : 'text-slate-400')}>{dashboard.expiringCerts}</div>
               <div className="text-xs text-slate-500">הסמכות פגות תוך 30 יום</div>
             </div>
           </div>
-          <div
-            className={cn(
-              'border rounded-xl p-4 flex items-center gap-3',
-              dashboard.birthdays.length > 0
-                ? 'bg-blue-50 border-blue-200'
-                : 'bg-white border-slate-200'
-            )}
-          >
-            <div
-              className={cn(
-                'w-9 h-9 rounded-lg flex items-center justify-center',
-                dashboard.birthdays.length > 0 ? 'bg-blue-100' : 'bg-slate-100'
-              )}
-            >
-              <Cake
-                className={cn(
-                  'w-5 h-5',
-                  dashboard.birthdays.length > 0 ? 'text-blue-600' : 'text-slate-400'
-                )}
-              />
+          <div className={cn('border rounded-xl p-4 flex items-center gap-3', dashboard.birthdays.length > 0 ? 'bg-blue-50 border-blue-200' : 'bg-white border-slate-200')}>
+            <div className={cn('w-9 h-9 rounded-lg flex items-center justify-center', dashboard.birthdays.length > 0 ? 'bg-blue-100' : 'bg-slate-100')}>
+              <Cake className={cn('w-5 h-5', dashboard.birthdays.length > 0 ? 'text-blue-600' : 'text-slate-400')} />
             </div>
             <div>
-              <div
-                className={cn(
-                  'text-2xl font-bold',
-                  dashboard.birthdays.length > 0 ? 'text-blue-700' : 'text-slate-500'
-                )}
-              >
-                {dashboard.birthdays.length}
-              </div>
+              <div className={cn('text-2xl font-bold', dashboard.birthdays.length > 0 ? 'text-blue-700' : 'text-slate-400')}>{dashboard.birthdays.length}</div>
               <div className="text-xs text-slate-500">ימי הולדת החודש</div>
             </div>
           </div>
