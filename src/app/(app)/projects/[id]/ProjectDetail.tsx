@@ -35,7 +35,7 @@ export default function ProjectDetail({ project: initial, allEmployees }: { proj
   const [project, setProject] = useState(initial)
   const [tab, setTab] = useState<Tab>('logs')
   const [editing, setEditing] = useState(false)
-  const [editData, setEditData] = useState<Partial<Project>>({})
+  const [editData, setEditData] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState(false)
   const [search, setSearch] = useState('')
   const [addingEmployee, setAddingEmployee] = useState(false)
@@ -61,7 +61,11 @@ export default function ProjectDetail({ project: initial, allEmployees }: { proj
     const res = await fetch(`/api/projects/${project.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(editData),
+      body: JSON.stringify({
+        ...editData,
+        startDate: editData.startDate || null,
+        endDate: editData.endDate || null,
+      }),
     })
     if (res.ok) { const d = await res.json(); setProject(p => ({ ...p, ...d })); setEditing(false) }
     setSaving(false)
@@ -101,21 +105,21 @@ export default function ProjectDetail({ project: initial, allEmployees }: { proj
       <div className="bg-white border border-slate-200 rounded-xl p-5 mb-4">
         {editing ? (
           <div className="space-y-3">
-            <EditField label="שם פרויקט" value={editData.name as string ?? ''} onChange={v => setEditData(d => ({ ...d, name: v }))} />
+            <EditField label="שם פרויקט" value={editData.name ?? ''} onChange={v => setEditData(d => ({ ...d, name: v }))} />
             <div className="grid grid-cols-2 gap-3">
-              <EditField label="כתובת" value={editData.address as string ?? ''} onChange={v => setEditData(d => ({ ...d, address: v }))} />
-              <EditField label="לקוח / יזם" value={editData.client as string ?? ''} onChange={v => setEditData(d => ({ ...d, client: v }))} />
-              <EditField label="תחילה" value={editData.startDate as string ?? ''} onChange={v => setEditData(d => ({ ...d, startDate: v }))} type="date" />
-              <EditField label="סיום" value={editData.endDate as string ?? ''} onChange={v => setEditData(d => ({ ...d, endDate: v }))} type="date" />
+              <EditField label="כתובת" value={editData.address ?? ''} onChange={v => setEditData(d => ({ ...d, address: v }))} />
+              <EditField label="לקוח / יזם" value={editData.client ?? ''} onChange={v => setEditData(d => ({ ...d, client: v }))} />
+              <EditField label="תחילה" value={editData.startDate ?? ''} onChange={v => setEditData(d => ({ ...d, startDate: v }))} type="date" />
+              <EditField label="סיום" value={editData.endDate ?? ''} onChange={v => setEditData(d => ({ ...d, endDate: v }))} type="date" />
               <div>
                 <label className="block text-xs text-slate-500 mb-1">סטטוס</label>
-                <select value={editData.status as string ?? ''} onChange={e => setEditData(d => ({ ...d, status: e.target.value }))}
+                <select value={editData.status ?? ''} onChange={e => setEditData(d => ({ ...d, status: e.target.value }))}
                   className="w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none">
                   {Object.entries(STATUS_LABELS).map(([v, { label }]) => <option key={v} value={v}>{label}</option>)}
                 </select>
               </div>
             </div>
-            <EditField label="תיאור" value={editData.description as string ?? ''} onChange={v => setEditData(d => ({ ...d, description: v }))} textarea />
+            <EditField label="תיאור" value={editData.description ?? ''} onChange={v => setEditData(d => ({ ...d, description: v }))} textarea />
             <div className="flex gap-2">
               <button onClick={saveEdit} disabled={saving} className="flex items-center gap-1.5 bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50">
                 <Check className="w-3.5 h-3.5" />{saving ? 'שומר...' : 'שמור'}
